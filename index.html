@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#0D0B0E" />
+<title>mingle. — la mappa segreta della tua città</title>
+<meta name="description" content="mingle. è la mappa segreta della tua città: lascia un drop, una foto e due parole, nel punto in cui sei. Chi passa di lì lo trova." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Oi&family=Bricolage+Grotesque:opsz,wght@12..96,600..800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+/*
+  Pagina di atterraggio dei link nelle email di mingle.
+  Supabase ci reindirizza qui dopo aver verificato il link. La pagina:
+   - mostra "Email confermata" (o "Link scaduto" se Supabase segnala un errore);
+   - offre il pulsante "Apri mingle." che passa all'app gli stessi parametri
+     (?code=… / #access_token=…), così l'app può completare il login o il
+     cambio password;
+   - per il reset password prova ad aprire l'app da sola.
+  Flussi: ?flow=signup (default) · ?flow=reset
+*/
+:root {
+  --ink:#0D0B0E; --ink2:#17131A; --ink3:#221C26; --paper:#F7F1F4; --muted:#A79CA8;
+  --magenta:#FF3D7F; --amber:#FFB547; --blush:#FF8FB1;
+  --spring:cubic-bezier(.34,1.56,.64,1);
+  color-scheme: dark;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%;background:var(--ink);color:var(--paper);font-family:"Inter",system-ui,-apple-system,sans-serif}
+body{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;min-height:100dvh;
+  padding:max(24px,env(safe-area-inset-top)) max(20px,env(safe-area-inset-right)) max(24px,env(safe-area-inset-bottom)) max(20px,env(safe-area-inset-left));overflow-x:hidden}
+.glow{position:fixed;left:50%;top:38%;width:720px;height:720px;margin:-360px 0 0 -360px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,61,127,.22),rgba(255,61,127,0) 62%);pointer-events:none}
+main{position:relative;width:100%;max-width:420px;display:flex;flex-direction:column;align-items:center;text-align:center}
+.wordmark{font-family:"Oi",Georgia,serif;font-size:34px;line-height:1;display:flex;align-items:flex-end;gap:2px;margin-bottom:28px;opacity:0;animation:fadeUp .6s ease-out .05s forwards}
+.wordmark i{width:15px;height:15px;border-radius:50%;background:var(--magenta);display:inline-block;margin-bottom:3px}
+.stage{position:relative;width:220px;height:220px;margin-bottom:8px}
+.stage svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+#dot{animation:land 1.1s cubic-bezier(.3,0,.4,1) .2s both;transform-origin:50% 85%}
+@keyframes land{0%{transform:translateY(-260px) scale(.7,1.25)}45%{transform:translateY(0) scale(1.3,.7)}62%{transform:translateY(-34px) scale(.92,1.1)}78%{transform:translateY(0) scale(1.08,.92)}100%{transform:none}}
+.confetti{position:absolute;left:50%;top:50%;width:12px;height:7px;border-radius:2px;opacity:0;animation:pop 1.3s cubic-bezier(.15,.8,.3,1) forwards}
+@keyframes pop{0%{opacity:1;transform:translate(-50%,-50%) rotate(0)}100%{opacity:0;transform:translate(calc(-50% + var(--x)),calc(-50% + var(--y))) rotate(var(--r))}}
+.card{width:100%;background:var(--ink2);border:1px solid rgba(247,241,244,.08);border-radius:32px;padding:30px 26px 26px;
+  opacity:0;animation:fadeUp .7s ease-out .55s forwards}
+.eyebrow{font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--magenta);margin-bottom:10px}
+h1{font-family:"Bricolage Grotesque","Inter",sans-serif;font-weight:800;font-size:36px;line-height:1;letter-spacing:-.04em;margin-bottom:12px;text-wrap:balance}
+p.lede{font-size:15.5px;line-height:1.55;color:var(--muted);margin-bottom:24px;text-wrap:pretty}
+.btn{display:block;width:100%;padding:17px 22px;border-radius:999px;background:var(--magenta);color:#fff;font-weight:700;font-size:16.5px;text-decoration:none;
+  box-shadow:0 14px 30px -12px rgba(255,61,127,.65);transition:transform .25s var(--spring)}
+.btn:active{transform:scale(.96)}
+.btn:focus-visible{outline:3px solid var(--amber);outline-offset:3px}
+.hint{margin-top:16px;font-size:13px;line-height:1.55;color:var(--muted)}
+.hint b{color:var(--paper);font-weight:600}
+footer{margin-top:28px;font-size:12px;color:rgba(167,156,168,.6)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important}}
+</style>
+</head>
+<body>
+<div class="glow" aria-hidden="true"></div>
+<main>
+  <div class="wordmark" aria-label="mingle.">mingle<i></i></div>
+  <div class="stage" aria-hidden="true">
+    <svg viewBox="0 0 200 200"><g id="dot"><path id="body" fill="#FF3D7F"/><g id="face"></g></g></svg>
+  </div>
+  <section class="card">
+    <p class="eyebrow">Presto</p>
+    <h1>La mappa segreta della tua città.</h1>
+    <p class="lede" style="margin-bottom:0">Una foto, due parole, un posto. Lascia un drop nel punto in cui sei: chi passerà di lì lo troverà. Serate, club e concerti hanno la loro mappa.</p>
+  </section>
+  <footer>mingle. · sta arrivando</footer>
+</main>
+<script>
+(function () {
+  var INK = '#0D0B0E';
+  document.getElementById('face').innerHTML = '<g id="eyes"><ellipse cx="79" cy="88" rx="8" ry="11" fill="' + INK + '"/><ellipse cx="121" cy="88" rx="8" ry="11" fill="' + INK + '"/><circle cx="82" cy="83" r="2.6" fill="#fff"/><circle cx="124" cy="83" r="2.6" fill="#fff"/></g><path d="M86 118Q100 131 114 118" stroke="' + INK + '" stroke-width="6" fill="none" stroke-linecap="round"/><ellipse cx="63" cy="110" rx="9" ry="5" fill="#fff" opacity=".24"/><ellipse cx="137" cy="110" rx="9" ry="5" fill="#fff" opacity=".24"/>';
+  var body = document.getElementById('body'), eyes = document.getElementById('eyes'), seed = Math.random() * 6;
+  var still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function blob(t) {
+    var d = '', amp = still ? 0 : .045;
+    for (var i = 0; i <= 72; i++) {
+      var a = i / 72 * Math.PI * 2;
+      var k = 1 + amp * (.55 * Math.sin(3 * a + t * 1.4 + seed) + .35 * Math.sin(5 * a - t * 1.1 + seed * 2) + .25 * Math.sin(2 * a + t * .8));
+      d += (i ? 'L' : 'M') + (100 + Math.cos(a) * 70 * k).toFixed(1) + ' ' + (100 + Math.sin(a) * 70 * k).toFixed(1);
+    }
+    return d + 'Z';
+  }
+  (function loop(now) {
+    var t = now / 1000;
+    body.setAttribute('d', blob(t));
+    var ph = (t + seed) % 4.2, s = ph > 3.93 && ph < 4.03 ? .1 : 1;
+    eyes.setAttribute('transform', 'translate(' + (Math.sin(t * .9) * 6).toFixed(1) + ' ' + (88 * (1 - s)).toFixed(1) + ') scale(1 ' + s + ')');
+    requestAnimationFrame(loop);
+  })(0);
+})();
+</script>
+</body>
+</html>
